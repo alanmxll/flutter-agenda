@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_agenda/app/helpers/contact_helper.dart';
 import 'package:flutter_agenda/app/pages/contact_page.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+enum OrderOptions { orderAZ, orderZA }
 
 class HomePage extends StatefulWidget {
   @override
@@ -27,6 +30,21 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('Contatos'),
         centerTitle: true,
+        actions: <Widget>[
+          PopupMenuButton<OrderOptions>(
+            itemBuilder: (context) => <PopupMenuEntry<OrderOptions>>[
+              const PopupMenuItem<OrderOptions>(
+                child: Text('Ordenar de A-Z'),
+                value: OrderOptions.orderAZ,
+              ),
+              const PopupMenuItem<OrderOptions>(
+                child: Text('Ordenar de Z-A'),
+                value: OrderOptions.orderZA,
+              )
+            ],
+            onSelected: _orderList,
+          ),
+        ],
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
@@ -57,10 +75,10 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
-                      image: contacts[index].img != null
-                          ? FileImage(File(contacts[index].img))
-                          : AssetImage('assets/images/person.jpg'),
-                    ),
+                        image: contacts[index].img != null
+                            ? FileImage(File(contacts[index].img))
+                            : AssetImage('assets/images/person.png'),
+                        fit: BoxFit.cover),
                   ),
                 ),
                 Padding(
@@ -108,7 +126,10 @@ class _HomePageState extends State<HomePage> {
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: FlatButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            launch('tel::${contacts[index].phone}');
+                            Navigator.pop(context);
+                          },
                           child: Text(
                             'Ligar',
                             style: TextStyle(
@@ -171,5 +192,19 @@ class _HomePageState extends State<HomePage> {
 
   void _getAllContacts() {
     helper.getAllContacts().then((list) => setState(() => contacts = list));
+  }
+
+  void _orderList(OrderOptions result) {
+    switch (result) {
+      case OrderOptions.orderAZ:
+        contacts.sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        break;
+      case OrderOptions.orderZA:
+        contacts.sort(
+            (a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
+        break;
+    }
+    setState(() {});
   }
 }
