@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_agenda/app/pages/contact_page.dart';
 import 'package:flutter_agenda/app/pages/home_page.dart';
 
 class AppWidget extends StatelessWidget {
@@ -11,7 +12,7 @@ class AppWidget extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
+      home: ContactPage(),
     );
   }
 }
